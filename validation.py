@@ -48,7 +48,8 @@ def main():
     else:
         model = torch.load(MODEL_PATH + '/' + MODEL_NAME, map_location='cpu')
     model.eval()
-
+    #test
+    #test2
     correct = 0.
     total = 0
     for images, labels in dataset_loader:

@@ -34,7 +34,7 @@ transform = transforms.Compose([
     transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
 ])
 
-
+# test
 # Load data
 dataset = torchvision.datasets.CIFAR100(root=WORK_DIR,
                                         download=True,
