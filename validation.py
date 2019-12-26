@@ -29,17 +29,23 @@ transform = transforms.Compose([
 
 
 # Load data
-dataset = torchvision.datasets.CIFAR100(root=WORK_DIR,
-                                        download=True,
-                                        train=False,
-                                        transform=transform)
 
-dataset_loader = torch.utils.data.DataLoader(dataset=dataset,
-                                             batch_size=BATCH_SIZE,
-                                             shuffle=True)
 
 
 def main():
+    normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                     std=[0.229, 0.224, 0.225])
+
+    dataset = torchvision.datasets.CIFAR10(root='./data', train=False, transform=transforms.Compose([
+        transforms.ToTensor(),
+        normalize,
+    ]))
+
+    dataset_loader = torch.utils.data.DataLoader(
+        dataset,
+        batch_size=128, shuffle=True,
+        num_workers=4, pin_memory=True)
+    
     print("Val numbers:%d"%(len(dataset)))
 
     # Load model
@@ -52,21 +58,27 @@ def main():
     #test2
     correct = 0.
     total = 0
+    i=0
     for images, labels in dataset_loader:
+        i=i+1
         # to GPU
         images = images.to(device)
         labels = labels.to(device)
+        #print(labels)
         # print prediction
         outputs = model(images)
         # equal prediction and acc
         _, predicted = torch.max(outputs.data, 1)
+        #print(predicted)
         # val_loader total
         total += labels.size(0)
         # add correct
         correct += (predicted == labels).sum().item()
+        if i>2:
+            break
 
     print("Acc:%.4f."%(correct / total))
 
-
+#test
 if __name__ == '__main__':
     main()

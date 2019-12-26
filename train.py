@@ -26,27 +26,25 @@ MODEL_NAME = 'vgg19_bn.pth'
 if not os.path.exists(MODEL_PATH):
     os.makedirs(MODEL_PATH)
 
-transform = transforms.Compose([
-    transforms.RandomCrop(36, padding=4),
-    transforms.CenterCrop(32),
-    transforms.RandomHorizontalFlip(),
-    transforms.ToTensor(),
-    transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
-])
 
-# test
-# Load data
-dataset = torchvision.datasets.CIFAR100(root=WORK_DIR,
-                                        download=True,
-                                        train=True,
-                                        transform=transform)
-
-dataset_loader = torch.utils.data.DataLoader(dataset=dataset,
-                                             batch_size=BATCH_SIZE,
-                                             shuffle=True)
 
 
 def main():
+    normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                     std=[0.229, 0.224, 0.225])
+
+    dataset = torchvision.datasets.CIFAR10(root='./data', train=True, transform=transforms.Compose([
+        transforms.RandomHorizontalFlip(),
+        transforms.RandomCrop(32, 4),
+        transforms.ToTensor(),
+        normalize,
+    ]), download=True)
+
+    dataset_loader = torch.utils.data.DataLoader(
+        dataset,
+        batch_size=128, shuffle=True,
+        num_workers=4, pin_memory=True)
+
     print("Train numbers:%d"%(len(dataset)))
 
     # first train run this line
