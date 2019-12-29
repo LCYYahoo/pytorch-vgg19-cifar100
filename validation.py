@@ -4,7 +4,7 @@ import torch
 import torchvision
 from torchvision import transforms
 import torch.utils.data
-
+from mrdataset import BrainsDataset
 
 # Device configuration
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -33,19 +33,24 @@ transform = transforms.Compose([
 
 
 def main():
-    normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                     std=[0.229, 0.224, 0.225])
+    #normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
+    #                                 std=[0.229, 0.224, 0.225])
 
-    dataset = torchvision.datasets.CIFAR10(root='./data', train=False, transform=transforms.Compose([
-        transforms.ToTensor(),
-        normalize,
-    ]))
+    #dataset = torchvision.datasets.CIFAR10(root='./data', train=False, transform=transforms.Compose([
+    #    transforms.ToTensor(),
+    #    normalize,
+    #]))
 
+    dataset = BrainsDataset("data/datacv2", 32)
+    #dataset_loader = torch.utils.data.DataLoader(
+    #    dataset,
+    #    batch_size=128, shuffle=True,
+    #    num_workers=4, pin_memory=True)
     dataset_loader = torch.utils.data.DataLoader(
         dataset,
-        batch_size=128, shuffle=True,
+        batch_size=1, shuffle=True,
         num_workers=4, pin_memory=True)
-    
+
     print("Val numbers:%d"%(len(dataset)))
 
     # Load model

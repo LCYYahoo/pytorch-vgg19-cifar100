@@ -5,8 +5,9 @@ import time
 import torch
 import torchvision
 from torchvision import transforms
-import torch.utils.data
-from mrdataset import BrainsDataset
+
+from PIL import Image
+from torch.utils.data import Dataset
 
 # first train run this code
 from vgg import vgg19_bn
@@ -23,31 +24,49 @@ LEARNING_RATE = 1e-4
 MODEL_PATH = './models'
 MODEL_NAME = 'vgg19_bn.pth'
 
+
+
 # Create model
 if not os.path.exists(MODEL_PATH):
     os.makedirs(MODEL_PATH)
 
+class MyDataset(Dataset):
+def __init__(self, txt_path, transform = None, target_transform = None):
+	fh = open(txt_path, 'r')
+	imgs = []
+	for line in fh:
+		line = line.rstrip()
+		words = line.split()
+		imgs.append((words[0], int(words[1])))
+		self.imgs = imgs
+		self.transform = transform
+		self.target_transform = target_transform
+def __getitem__(self, index):
+	fn, label = self.imgs[index]
+	img = Image.open(fn).convert('RGB')
+	if self.transform is not None:
+		img = self.transform(img)
+	return img, label
+def __len__(self):
+	return len(self.imgs)
+
 
 
 def main():
-    #normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
-    #                                std=[0.229, 0.224, 0.225])
+    normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                     std=[0.229, 0.224, 0.225])
 
-    #dataset = torchvision.datasets.CIFAR10(root='./data', train=True, transform=transforms.Compose([
-    #    transforms.RandomHorizontalFlip(),
-    #   transforms.RandomCrop(32, 4),
-    #    transforms.ToTensor(),
-    #    normalize,
-    #]), download=True)
-    dataset = BrainsDataset("data/datacv", 32)
+    dataset = torchvision.datasets.data(root='./data/datacv', train=True, transform=transforms.Compose([
+        transforms.RandomHorizontalFlip(),
+        transforms.Resize(1200,interpolation=2),
+        transforms.Pad(4,padding_mode='edge'),
+        transforms.ToTensor(),
+        normalize,
+    ]))
 
-    #dataset_loader = torch.utils.data.DataLoader(
-    #    dataset,
-    #    batch_size=128, shuffle=True,
-    #    num_workers=4, pin_memory=True)
     dataset_loader = torch.utils.data.DataLoader(
         dataset,
-        batch_size=1, shuffle=True,
+        batch_size=128, shuffle=True,
         num_workers=4, pin_memory=True)
 
     print("Train numbers:%d"%(len(dataset)))
