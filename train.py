@@ -17,7 +17,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 WORK_DIR = './data'
 NUM_EPOCHS = 50
-BATCH_SIZE = 128
+BATCH_SIZE = 1
 LEARNING_RATE = 1e-4
 
 MODEL_PATH = './models'

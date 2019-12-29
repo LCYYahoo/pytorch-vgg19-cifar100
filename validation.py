@@ -79,8 +79,7 @@ def main():
         total += labels.size(0)
         # add correct
         correct += (predicted == labels).sum().item()
-        if i>2:
-            break
+
 
     print("Acc:%.4f."%(correct / total))
 
